@@ -1,0 +1,25 @@
+{
+  "name": "QSTable",
+  "version": "1.0.0",
+  "description": "Another Table viz",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PabloSLabbe/QSTable.git"
+  },
+  "keywords": [
+    "Qlik",
+    "Sense",
+    "qlik-sense",
+    "visualization",
+    "visualization-extensions"
+  ],
+  "author": "Pablo Labbe - AnalitikaBR",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PabloSLabbe/QSTable/issues"
+  },
+  "homepage": "https://github.com/PabloSLabbe/QSTable#readme"
+}
