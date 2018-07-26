@@ -37,12 +37,12 @@ define( ["qlik", "jquery", "text!./style.css"], function ( qlik, $, cssContent )
 		var AppBaseURL = getAppBaseURL();
 		
 		rows.forEach( function ( row ) {
-			html += '<tr>';
+			html += '<tr class="row-style">';
 			row.forEach( function ( cell, key ) {
 				if ( cell.qIsOtherCell ) {
 					cell.qText = dimensionInfo[key].othersLabel;
 				}
-				html += "<td class='";
+				html += "<td class='qv-st-header-selections-active  qv-st-data-cell qv-st-data-cell-dimension-value ";
 				if ( !isNaN( cell.qNum ) ) {
 					html += "numeric ";
 				}
@@ -62,6 +62,37 @@ define( ["qlik", "jquery", "text!./style.css"], function ( qlik, $, cssContent )
 					var urlmark = cell.qText.toLowerCase().indexOf('<app>');
 					html += "'"+'> <a href="' + AppBaseURL + cell.qText.slice(urlmark+5, cell.qText.length) + '" target="_blank">' + cell.qText.slice(0,urlmark) + '</a></td>';
 				  }
+				  else if(~cell.qText.toLowerCase().indexOf('<percent>')){
+					var urlmark = cell.qText.toLowerCase().indexOf('<percent>');
+					html += "'"+'>'+ Number(cell.qText.slice(0,urlmark)).toFixed(1) +  ' % </td>';
+				  } 
+				  else if(~cell.qText.toLowerCase().indexOf('<dollar>')){
+					var urlmark = cell.qText.toLowerCase().indexOf('<dollar>');
+					html += "'"+'>$'+ Number(cell.qText.slice(0,urlmark)).toFixed(0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +  ' </td>';
+				  }
+				 //<!-- text, colored -->
+					else if(cell.qText.indexOf('value:') > -1 && cell.qText.indexOf('color:') > -1){
+						html += "'"+'>'+ '<span style="color:' + cell.qText.substring(cell.qText.indexOf('color:')+6, cell.qText.indexOf(';')) + '">'+
+							cell.qText.substring(cell.qText.indexOf('value:')+6,cell.qText.indexOf('/')) + '</span>' +  ' </td>';
+					}
+					//<!-- just icon -->
+					else if(cell.qText.indexOf('icon:') > -1 && cell.qText.indexOf('color:') == -1 && cell.qText.indexOf('no-change') == -1){
+						html += "'"+'>'+ '<span class="icon lui-icon lui-icon lui-icon--'+cell.qText.substring(cell.qText.indexOf('icon:')+5, cell.qText.indexOf('+'))+'"></span>' +  ' </td>';
+					}
+					//<!-- no-change icon --> 
+					else if(cell.qText.indexOf('icon:') > -1 && cell.qText.indexOf('color:') == -1 && cell.qText.indexOf('no-change') > -1){
+						html += ' qv-st-value align-center ';
+						html += "'"+'>'+ '<span style="font-weight:bold"> - </span>' +  ' </td>';
+					}
+					//<!-- icon, colored -->
+					else if(cell.qText.indexOf('icon:') > -1 && cell.qText.indexOf('color:') > -1  && cell.qText.indexOf('hover:') == -1){
+						html += "'"+'>'+ '<span class="icon lui-icon lui-icon lui-icon--'+cell.qText.substring(cell.qText.indexOf('icon:')+5, cell.qText.indexOf('+'))+'" style="padding:.2em;color:'+cell.qText.substring(cell.qText.indexOf('color:')+6, cell.qText.indexOf(';'))+'"></span>' +  ' </td>';
+					}
+					//<!-- icon, colored, @hover value -->
+					else if(cell.qText.indexOf('icon:') > -1 && cell.qText.indexOf('color:') > -1 && cell.qText.indexOf('hover:') > -1){
+						html += ' qv-st-value align-center ';
+						html += "'"+'>'+ '<span class="icon lui-icon lui-icon lui-icon--'+cell.qText.substring(cell.qText.indexOf('icon:')+5, cell.qText.indexOf('+'))+' tooltip-trigger" style="padding:.2em;color:'+cell.qText.substring(cell.qText.indexOf('color:')+6, cell.qText.indexOf('@'))+'"  title="'+cell.qText.substring(cell.qText.indexOf('hover:')+6, cell.qText.indexOf(';'))+'" aria-haspopup="true"></span>' +  ' </td>';
+					}
 				  else {
 					html += "'>" + cell.qText + '</td>';
 				  };
@@ -114,10 +145,10 @@ define( ["qlik", "jquery", "text!./style.css"], function ( qlik, $, cssContent )
 
 	function formatHeader ( col, value, sortorder ) {
 		var html =
-			'<th data-col="' + col + '">' + value.qFallbackTitle ;
+			'<th class="qv-st-header-cell qv-st-header-selections-active table-header" data-col="' + col + '">' + value.qFallbackTitle ;
 		//sort Ascending or Descending ?? add arrow
 		if(value.qSortIndicator === 'A' || value.qSortIndicator === 'D') {
-			html += (value.qSortIndicator === 'A' ? "<i class='icon-triangle-top" : "<i class='icon-triangle-bottom");
+			html += (value.qSortIndicator === 'A' ? "&nbsp;<i class='icon-triangle-top icon-color" : "&nbsp;<i class='icon-triangle-bottom icon-color");
 			if ( sortorder && sortorder[0] !== col ) {
 				html += " secondary";
 			}
@@ -162,7 +193,7 @@ define( ["qlik", "jquery", "text!./style.css"], function ( qlik, $, cssContent )
 			canTakeSnapshot: true
 		},
 		paint: function ( $element, layout ) {
-			var html = "<table><thead><tr>", self = this,
+			var html = "<table class='table-style'><thead class='head-style'><tr>", self = this,
 				morebutton = false,
 				hypercube = layout.qHyperCube,
 				rowcount = hypercube.qDataPages[0].qMatrix.length,
@@ -184,7 +215,7 @@ define( ["qlik", "jquery", "text!./style.css"], function ( qlik, $, cssContent )
             hypercube.qMeasureInfo.forEach(function(value, col) {
                 html += formatHeader(col + dimcount, value, sortorder);
 			} );
-			html += "</tr></thead><tbody>";
+			html += "</tr></thead><tbody class='table-content'>";
 			//render data
 			html += createRows( hypercube.qDataPages[0].qMatrix, hypercube.qDimensionInfo);
 			html += "</tbody></table>";
