@@ -6,6 +6,7 @@
 
 .table-style{
 	display: flex;flex-flow: column;height: 99%;width: 100%;
+	word-wrap: break-word;
 }
 
 .table-header{
@@ -15,6 +16,7 @@
 
 .head-style{
 	flex: 0 0 auto;width: calc(100% - 0.9em);display: table;table-layout: fixed;
+	word-wrap: break-word;
 }
 
 .table-content{
